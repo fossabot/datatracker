@@ -4,6 +4,7 @@
 {% load django_bootstrap5 %}
 {% block title %}Announcement{% endblock %}
 {% block content %}
+    {% origin %}
     <h1>Confirm Announcement</h1>
     <form class="mt-3"
           action="{% url "ietf.secr.announcement.views.confirm" %}"

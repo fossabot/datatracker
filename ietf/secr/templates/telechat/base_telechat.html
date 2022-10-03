@@ -1,26 +1,25 @@
-{% extends "base_site.html" %}
+{% extends "base.html" %}
+{% load origin %}
 {% load staticfiles %}
+{% load ietf_filters %}
 
 {% block title %}Telechat{% endblock %}
 
-{% block extrahead %}{{ block.super }}
+{% block xxxextrahead %}{{ block.super }}
     <script src="{% static 'secr/js/utils.js' %}"></script>
     <link rel="stylesheet" href="{% static 'secr/css/telechat.css' %}">
 {% endblock %}
 
-{% block breadcrumbs %}{{ block.super }}
-    &raquo; <a href="{% url 'ietf.secr.telechat.views.main' %}">Telechat</a>
-{% endblock %}
-
 {% block content %}
-    {% load ietf_filters %}
-    <div id="telechat-sidebar">
-        <h2>Agenda {{ date }}</h2>
+    {% origin %}
+    <div class="row">
+    <div class="col-4">
+        <h1>Agenda{% if date %}<br><small class="text-muted">{{ date }}</small>{% endif %}</h1>
         {% if agenda %}
             <ul>
                 {% for num, section in agenda.sections.items %}
                     {% if num >= "2" and num < "5" %}
-                        <li class="level{{ num|sectionlevel }}">{{ num }} {{ section.title }}
+                        <li class="h{{ num|sectionlevel|add:'3' }} ms-{{ num|sectionlevel|add:'-1'}}">{{ num }} {{ section.title }}
 
                             {% if "docs" in section %}
                                 {% if section.docs %}
@@ -43,7 +42,7 @@
     </div>
 
 
-    <div id="telechat-main">
+    <div class="col-8">
         {% if date %}
             <div id="telechat-nav">
                 <ul class="list-nav">
@@ -59,5 +58,5 @@
         {% block subsection %}<div id="telechat-content"></div>{% endblock %}
 
     </div>
-
+</div>
 {% endblock %}
