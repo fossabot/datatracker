@@ -11,7 +11,9 @@
            aria-expanded="false">
             {% if user.is_authenticated %}
                 {% if user.person.photo_thumb %}
-                    <img class="user-photo rounded-circle ms-1" width="40" height="40"
+                    <img class="user-photo rounded-circle ms-1"
+                         width="40"
+                         height="40"
                          src="{{ user.person.photo_thumb.url }}"
                          alt="Photo of {{ user.person.name }}">
                 {% else %}
@@ -134,7 +136,11 @@
         </li>
     {% endif %}
     {% if user|has_role:"Area Director" %}
-        {% if flavor == "top" %}<li><hr class="dropdown-divider"></li>{% endif %}
+        {% if flavor == "top" %}
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+        {% endif %}
         <li {% if flavor == "top" %}class="dropdown-header"{% else %}class="nav-item fw-bolder"{% endif %}>AD dashboard</li>
         <li>
             <a class="dropdown-item {% if flavor != 'top' %} text-wrap link-primary{% endif %}"
@@ -168,21 +174,92 @@
         </li>
     {% endif %}
     {% if user|has_role:"Secretariat" %}
-        {% if flavor == "top" %}<li><hr class="dropdown-divider"></li>{% endif %}
-        <li {% if flavor == "top" %}class="dropdown-header"{% else %}class="nav-item fw-bolder"{% endif %}>
+        {% if flavor == "top" %}
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+        {% endif %}
+        <li {% if flavor == 'top' %}class="dropdown-header"{% else %}class="nav-item fw-bolder"{% endif %}>
             IETF secretariat
         </li>
-        <li>
-            <a class="dropdown-item {% if flavor != 'top' %} text-wrap link-primary{% endif %}"
-               href="{% url 'admin:iesg_telechatdate_changelist' %}">
-                Telechat dates
+        <li class="dropend group-menu">
+            <a class="dropdown-item dropdown-toggle {% if flavor != 'top' %}text-wrap link-primary{% endif %}"
+               href="#">IESG</a>
+            <ul class="dropdown-menu ms-n1{% if flavor == 'top' %} mt-n1{% endif %}">
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'ietf.secr.announcement.views.main' %}">Announcement</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'ietf.secr.telechat.views.main' %}">Telechat</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{% url 'ietf.secr.console.views.main' %}">Console</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'admin:iesg_telechatdate_changelist' %}">
+                        Telechat dates
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'admin:iesg_telechatagendaitem_changelist' %}">
+                        Management items
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="dropend group-menu">
+            <a class="dropdown-item dropdown-toggle {% if flavor != 'top' %}text-wrap link-primary{% endif %}"
+               href="#">
+                IDs &amp; WGs
             </a>
+            <ul class="dropdown-menu ms-n1{% if flavor == 'top' %} mt-n1{% endif %}">
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url "ietf.secr.areas.views.list_areas" %}">Areas</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'ietf.secr.groups.views.search' %}">Groups</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'ietf.secr.rolodex.views.search' %}">Rolodex</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{% url 'ietf.secr.roles.views.main' %}">Roles</a>
+                </li>
+            </ul>
+        </li>
+        <li class="dropend group-menu">
+            <a class="dropdown-item dropdown-toggle {% if flavor != 'top' %}text-wrap link-primary{% endif %}"
+               href="#">
+                Meetings &amp; Proceedings
+            </a>
+            <ul class="dropdown-menu ms-n1{% if flavor == 'top' %} mt-n1{% endif %}">
+                <li>
+                    <a class="dropdown-item" href="{% url "ietf.secr.sreq.views.main" %}">Session Requests</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url 'ietf.secr.proceedings.views.main' %}">Meeting Materials Manager (Proceedings)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url "ietf.secr.meetings.views.main" %}">Meeting Manager</a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       href="{% url "ietf.secr.meetings.views.blue_sheet_redirect" %}">Blue Sheets</a>
+                </li>
+            </ul>
         </li>
         <li>
             <a class="dropdown-item {% if flavor != 'top' %} text-wrap link-primary{% endif %}"
-               href="{% url 'admin:iesg_telechatagendaitem_changelist' %}">
-                Management items
-            </a>
+               href="{% url 'ietf.ipr.views.admin' state='pending' %}">IPR Admin</a>
         </li>
         <li>
             <a class="dropdown-item {% if flavor != 'top' %} text-wrap link-primary{% endif %}"
@@ -205,7 +282,8 @@
     {% endif %}
     {% if user|has_role:"IANA" %}
         {% if flavor == "top" %}
-            <li><hr class="dropdown-divider">
+            <li>
+                <hr class="dropdown-divider">
             </li>
         {% endif %}
         <li {% if flavor == "top" %}class="dropdown-header"{% else %}class="nav-item fw-bolder"{% endif %}>
@@ -220,7 +298,8 @@
     {% endif %}
     {% if user|has_role:"RFC Editor" %}
         {% if flavor == "top" %}
-            <li><hr class="dropdown-divider">
+            <li>
+                <hr class="dropdown-divider">
             </li>
         {% endif %}
         <li {% if flavor == "top" %}class="dropdown-header"{% else %}class="nav-item fw-bolder"{% endif %}>
@@ -233,4 +312,7 @@
             </a>
         </li>
     {% endif %}
-    {% if flavor == "top" %}</ul></li>{% endif %}
+    {% if flavor == "top" %}
+    </ul>
+</li>
+{% endif %}
