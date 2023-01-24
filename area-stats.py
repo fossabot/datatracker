@@ -9,7 +9,7 @@ import django
 
 django.setup()
 
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.utils import timezone
 
 from ietf.doc.models import Document
@@ -49,17 +49,29 @@ def mk_row_group(group, group_docs):
 #     docevent__time__gte=timezone.now() - datetime.timedelta(days=3 * 365),
 # ).exclude(group__acronym="none")
 
+# docs = (
+#     Document.objects.filter(
+#         type__slug="draft",
+#         docevent__type__in=["published_rfc", "new_revision"],
+#         docevent__time__gte=timezone.now() - datetime.timedelta(days=3 * 365),
+#     )
+#     .exclude(group__acronym="none")
+#     .exclude(states__slug__in=["repl", "expired"])
+#     .order_by("name")
+#     .distinct()
+# )
+
+when = timezone.now() - datetime.timedelta(days=3 * 365)
 docs = (
-    Document.objects.filter(
-        type__slug="draft",
-        docevent__type__in=["published_rfc", "new_revision"],
-        docevent__time__gte=timezone.now() - datetime.timedelta(days=3 * 365),
+    Document.objects.filter(type="draft", stream="ietf")
+    .filter(
+        Q(docevent__newrevisiondocevent__time__gte=when)
+        | Q(docevent__type="published_rfc", docevent__time__gte=when)
     )
-    .exclude(group__acronym="none")
-    .exclude(states__slug__in=["repl", "expired"])
-    .order_by("name")
+    .exclude(states__type="draft", states__slug="replaced")
     .distinct()
 )
+
 
 df = pd.DataFrame()
 for a in Group.objects.filter(type="area"):
@@ -81,7 +93,7 @@ for a in Group.objects.filter(type="area"):
             name = (
                 f"rfc{doc.rfc_number()}"
                 if doc.rfc_number()
-                else doc.name.replace("draft-", "")
+                else doc.name #.replace("draft-", "")
             )
             # print(wg.parent.acronym, wg.acronym, name, doc.get_state_slug())
             df = pd.concat(
@@ -90,7 +102,7 @@ for a in Group.objects.filter(type="area"):
 
         area_docs = area_docs.exclude(group=wg)
 
-# print(df.to_string())
+print(df.to_string())
 
 
 def sunburst(label):
