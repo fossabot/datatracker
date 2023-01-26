@@ -20,6 +20,8 @@ import plotly.express as px
 import plotly.io as pio
 import plotly.graph_objects as go
 
+from plotly.subplots import make_subplots
+
 pio.kaleido.scope.mathjax = None
 
 
@@ -84,87 +86,106 @@ for a in Group.objects.filter(type="area"):
 
         area_docs = area_docs.exclude(group=wg)
 
-print(df.to_string())
+# print(df.to_string())
 
 
-def sunburst(label):
-    fig = px.sunburst(
-        df.replace("iesg", label),
-        names="name",
-        values=label,
-        parents="parent",
-        branchvalues="total",
+def sunburst(types):
+    fig = make_subplots(
+        rows=1,
+        cols=len(types),
+        horizontal_spacing=0.01,
+        subplot_titles=tuple(types),
+        specs=[[{"type": "sunburst"} for _ in types]],
     )
+    for i, label in enumerate(types):
+        subfig = px.sunburst(
+            df.replace("iesg", label),
+            names="name",
+            values=label,
+            parents="parent",
+            branchvalues="total",
+        )
+        subfig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+        # fig.update_traces(insidetextorientation="radial")
+        # fig.update_traces(sort=False)
+        # fig.update_traces(textinfo="label+percent parent")
+        fig.add_trace(subfig.data[0], row=1, col=i + 1)
+
     fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
-    # fig.update_traces(insidetextorientation="radial")
-    # fig.update_traces(sort=False)
-    # fig.update_traces(textinfo="label+percent parent")
-    fig.write_image(f"area-{label}.pdf")
+    fig.write_image("areas.pdf")
 
 
-def sankey(label, changes):
+def sankey(types, changes):
     areas = df[df["parent"] == "iesg"]
 
     key = {y: x for x, y in enumerate(areas["name"])}
     new_key = {y: x + len(key) for x, y in enumerate(areas["name"])}
 
-    sources = []
-    targets = []
-    values = []
-    link_labels = []
-    deltas = [0 for _ in key]
-    for group, new_area in changes.items():
-        row = df[df["name"] == group]
-        if row.empty:
-            continue
-        old_area = row["parent"].iloc[0]
-        value = row[label].iloc[0]
-        sources.append(key[old_area])
-        if new_area not in new_key:
-            continue
-        targets.append(new_key[new_area])
-        values.append(value)
-        deltas[key[old_area]] += value
-        link_labels.append(row["name"].iloc[0])
-
-    for _, area in areas.iterrows():
-        name = area["name"]
-        sources.append(key[name])
-        targets.append(new_key[name])
-        values.append(area[label] - deltas[key[name]])
-
-    node_labels = list(key.keys()) + list(key.keys())
-    node_colors = px.colors.qualitative.Plotly[: len(key)]
-    node_colors.extend(node_colors)
-
-    fig = go.Figure(
-        data=[
-            go.Sankey(
-                node=dict(
-                    label=node_labels,
-                    color=node_colors,
-                ),
-                link=dict(
-                    source=sources,
-                    target=targets,
-                    value=values,
-                    label=link_labels,
-                ),
-            )
-        ]
+    fig = make_subplots(
+        rows=1,
+        cols=len(types),
+        horizontal_spacing=0.01,
+        subplot_titles=tuple(types),
+        specs=[[{"type": "sankey"} for _ in types]],
     )
+    for i, label in enumerate(types):
+        sources = []
+        targets = []
+        values = []
+        link_labels = []
+        deltas = [0 for _ in key]
+        for group, new_area in changes.items():
+            row = df[df["name"] == group]
+            if row.empty:
+                continue
+            old_area = row["parent"].iloc[0]
+            value = row[label].iloc[0]
+            sources.append(key[old_area])
+            if new_area not in new_key:
+                continue
+            targets.append(new_key[new_area])
+            values.append(value)
+            deltas[key[old_area]] += value
+            link_labels.append(row["name"].iloc[0])
+
+        for _, area in areas.iterrows():
+            name = area["name"]
+            sources.append(key[name])
+            targets.append(new_key[name])
+            values.append(area[label] - deltas[key[name]])
+
+        node_labels = list(key.keys()) + list(key.keys())
+        node_colors = px.colors.qualitative.Plotly[: len(key)]
+        node_colors.extend(node_colors)
+
+        subfig = go.Sankey(
+            node=dict(
+                label=node_labels,
+                color=node_colors,
+            ),
+            link=dict(
+                source=sources,
+                target=targets,
+                value=values,
+                label=link_labels,
+            ),
+        )
+        # subfig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
+        fig.add_trace(subfig, row=1, col=i + 1)
+
     fig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
-    fig.write_image(f"area-{label}-sankey.pdf")
+    fig.write_image("areas-sankey.pdf")
 
 
-sunburst("docs")
-sunburst("pages")
+types = ["docs", "pages"]
+
+sunburst(types)
 
 # dict format: "group -> new area"
 changes = {
     # My proposal
-    "ippm": "int",
-    "bmwg": "int",
+    "ippm": "ops",
+    "bmwg": "ops",
     "detnet": "int",
     "lisp": "int",
     "nvo3": "int",
@@ -174,8 +195,8 @@ changes = {
     "webtrans": "tsv",
     "core": "tsv",
     # Martin's proposal
-    # "alto": "ops",
-    # "dtn": "int",
+    "alto": "ops",
+    "dtn": "int",
     # "ippm": "ops",
     # "masque": "int",
     # "nfsv4": "art",
@@ -186,5 +207,4 @@ changes = {
     # # "tsvwg ": "int",
 }
 
-sankey("docs", changes)
-sankey("pages", changes)
+sankey(types, changes)
