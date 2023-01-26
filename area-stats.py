@@ -43,24 +43,6 @@ def mk_row_group(group, group_docs):
     )
 
 
-# docs = Document.objects.filter(
-#     type__slug="draft",
-#     docevent__type="iesg_approved",
-#     docevent__time__gte=timezone.now() - datetime.timedelta(days=3 * 365),
-# ).exclude(group__acronym="none")
-
-# docs = (
-#     Document.objects.filter(
-#         type__slug="draft",
-#         docevent__type__in=["published_rfc", "new_revision"],
-#         docevent__time__gte=timezone.now() - datetime.timedelta(days=3 * 365),
-#     )
-#     .exclude(group__acronym="none")
-#     .exclude(states__slug__in=["repl", "expired"])
-#     .order_by("name")
-#     .distinct()
-# )
-
 when = timezone.now() - datetime.timedelta(days=3 * 365)
 docs = (
     Document.objects.filter(type="draft", stream="ietf")
@@ -68,14 +50,14 @@ docs = (
         Q(docevent__newrevisiondocevent__time__gte=when)
         | Q(docevent__type="published_rfc", docevent__time__gte=when)
     )
-    .exclude(states__type="draft", states__slug="replaced")
+    .exclude(states__type="draft", states__slug="repl")
     .distinct()
 )
 
 
 df = pd.DataFrame()
 for a in Group.objects.filter(type="area"):
-    area_docs = docs.filter(group__parent=a)
+    area_docs = docs.filter(group__parent=a).exclude(group__acronym="none")
     if not area_docs:
         continue
 
@@ -93,7 +75,7 @@ for a in Group.objects.filter(type="area"):
             name = (
                 f"rfc{doc.rfc_number()}"
                 if doc.rfc_number()
-                else doc.name #.replace("draft-", "")
+                else doc.name  # .replace("draft-", "")
             )
             # print(wg.parent.acronym, wg.acronym, name, doc.get_state_slug())
             df = pd.concat(
