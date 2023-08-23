@@ -23,9 +23,9 @@
         <thead>
             <tr>
                 <th scope="col" data-sort="doc">Document</th>
-                <th scope="col" class="d-none d-sm-table-cell" data-sort="date">Telechat Date</th>
+                <th scope="col" class="d-none" data-sort="date">Telechat Date</th>
                 <th scope="col" data-sort="status">Status</th>
-                <th scope="col" class="d-none d-sm-table-cell" data-sort="ad">Responsible AD</th>
+                <th scope="col" class="d-none" data-sort="ad">Responsible AD</th>
                 <th scope="col" data-sort="discusses">Discusses</th>
             </tr>
         </thead>
@@ -44,9 +44,9 @@
                             <br>
                             <span class="fw-bold">{{ doc.title }}</span>
                         </td>
-                        <td class="d-none d-sm-table-cell">{{ doc.telechat }}</td>
+                        <td class="d-none">{{ doc.telechat }}</td>
                         {% include "doc/search/status_columns.html" %}
-                        <td class="d-none d-sm-table-cell">{% person_link doc.ad %}</td>
+                        <td class="d-none">{% person_link doc.ad %}</td>
                         <td>
                             {% for p in doc.blocking_positions %}
                                 {% if p.is_old_pos %}<span class="text-body-secondary">{% endif %}

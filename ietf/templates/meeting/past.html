@@ -18,7 +18,7 @@
                     <th scope="col" data-sort="date">Date</th>
                     <th scope="col" data-sort="group">Group</th>
                     <th scope="col" data-sort="name">Name</th>
-                    <th scope="col" class="d-none d-sm-table-cell"></th>
+                    <th scope="col" class="d-none"></th>
                 </tr>
             </thead>
             <tbody>
@@ -42,7 +42,7 @@
                                 <a href="{% url 'agenda' num=meeting.number %}">IETF-{{ meeting.number }}</a>
                             {% endif %}
                         </td>
-                        <td class="d-none d-sm-table-cell">
+                        <td class="d-none">
                             {% if meeting.type_id == "interim" %}
                             {% else %}
                                 {% if meeting.get_number > 97 %}

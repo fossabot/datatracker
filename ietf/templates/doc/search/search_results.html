@@ -19,7 +19,7 @@
                     {% if h.title != "Title" %}
                         <th scope="col" data-sort="{{ h.key }}"
                             {% if h.title|slugify == "ipr" or h.title|slugify == "ad-shepherd" %}
-                              class="d-none d-sm-table-cell"
+                              class="d-none"
                             {% elif h.title|slugify == 'date' %}
                               data-default-sort="desc"
                             {% endif %}>

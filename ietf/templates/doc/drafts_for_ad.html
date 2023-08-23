@@ -18,7 +18,7 @@
                 <tr>
                     <th scope="col" data-sort="document">Document</th>
                     <th scope="col" data-sort="status">Status</th>
-                    <th scope="col" class="d-none d-sm-table-cell" data-sort="responsible">Responsible AD</th>
+                    <th scope="col" class="d-none" data-sort="responsible">Responsible AD</th>
                     <th scope="col" data-sort="discusses">Discusses</th>
                 </tr>
             </thead>
@@ -27,7 +27,7 @@
                     <tr>
                         <td>{{ doc.displayname_with_link }}</td>
                         {% include "doc/search/status_columns.html" %}
-                        <td class="d-none d-sm-table-cell">
+                        <td class="d-none">
                             {% if doc.ad %}
                                 {% person_link doc.ad %}
                             {% else %}
@@ -60,7 +60,7 @@
                 <tr>
                     <th scope="col" data-sort="document">Document</th>
                     <th scope="col" data-sort="status">Status</th>
-                    <th scope="col" class="d-none d-sm-table-cell" data-sort="responsible">Responsible AD</th>
+                    <th scope="col" class="d-none" data-sort="responsible">Responsible AD</th>
                 </tr>
             </thead>
             <tbody>
@@ -68,7 +68,7 @@
                     <tr>
                         <td>{{ doc.displayname_with_link }}</td>
                         {% include "doc/search/status_columns.html" %}
-                        <td class="d-none d-sm-table-cell">
+                        <td class="d-none">
                             {% if doc.ad %}
                                 {% person_link doc.ad %}
                             {% else %}

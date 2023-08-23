@@ -42,7 +42,7 @@
             <tr>
                 <th scope="col" data-sort="document">Document</th>
                 <th scope="col" data-sort="status">Status</th>
-                <th scope="col" data-sort="ad" class="d-none d-sm-table-cell">Responsible AD</th>
+                <th scope="col" data-sort="ad" class="d-none">Responsible AD</th>
                 <th scope="col" data-sort="discusses">Discusses</th>
             </tr>
         </thead>
@@ -57,7 +57,7 @@
                            {% endif %}">
                     <td>{{ doc.displayname_with_link }}</td>
                     {% include "doc/search/status_columns.html" %}
-                    <td class="d-none d-sm-table-cell">{% person_link doc.ad %}</td>
+                    <td class="d-none">{% person_link doc.ad %}</td>
                     <td>
                         {% for p in doc.blocking_positions %}
                             {% if p.is_old_pos %}<span class="text-body-secondary">{% endif %}
