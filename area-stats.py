@@ -172,7 +172,7 @@ def sankey(types, changes):
             value = row[label].iloc[0]
             sources.append(key[old_area])
             if new_area not in new_key:
-                continue
+                new_key[new_area] = len(key) + len(new_key)
             targets.append(new_key[new_area])
             values.append(value)
             deltas[key[old_area]] += value
@@ -184,22 +184,24 @@ def sankey(types, changes):
             targets.append(new_key[name])
             values.append(area[label] - deltas[key[name]])
 
-        node_labels = list(key.keys()) + list(key.keys())
+        node_labels = list(key.keys()) + list(new_key.keys())
         node_colors = px.colors.qualitative.Plotly[: len(key)]
         node_colors.extend(node_colors)
 
-        subfig = go.Sankey(
-            node=dict(
-                label=node_labels,
-                color=node_colors,
-            ),
-            link=dict(
-                source=sources,
-                target=targets,
-                value=values,
-                label=link_labels,
-            ),
+        node = dict(
+            label=node_labels,
+            color=node_colors,
         )
+        link = dict(
+            source=sources,
+            target=targets,
+            value=values,
+            label=link_labels,
+        )
+        print(node)
+        print(link)
+
+        subfig = go.Sankey(node=node, link=link)
         # subfig.update_layout(margin=dict(t=0, l=0, r=0, b=0))
         fig.add_trace(subfig, row=1, col=i + 1)
 
@@ -209,24 +211,24 @@ def sankey(types, changes):
 
 types = ["docs", "pages"]
 
-sunburst(types)
+# sunburst(types)
 
 # dict format: "group -> new area"
 changes = {
     # My proposal
-    "ippm": "ops",
-    "bmwg": "ops",
-    "detnet": "int",
-    "lisp": "int",
-    "nvo3": "int",
-    "raw": "int",
-    "httpbis": "tsv",
-    "httpapi": "tsv",
-    "webtrans": "tsv",
-    "core": "tsv",
+    # "ippm": "ops",
+    # "bmwg": "ops",
+    # "detnet": "int",
+    # "lisp": "int",
+    # "nvo3": "int",
+    # "raw": "int",
+    # "httpbis": "tsv",
+    # "httpapi": "tsv",
+    # "webtrans": "tsv",
+    # "core": "tsv",
     # Martin's proposal
-    "alto": "ops",
-    "dtn": "int",
+    # "alto": "ops",
+    # "dtn": "int",
     # "ippm": "ops",
     # "masque": "int",
     # "nfsv4": "art",
@@ -235,6 +237,25 @@ changes = {
     # # "taps": "int",
     # # "tcpm": "int",
     # # "tsvwg ": "int",
+    # Webcore proposal
+    "alto": "ops",
+    "ccwg": "webcore",
+    "dtn": "int",
+    "ippm": "ops",
+    "masque": "webcore",
+    "nfsv4": "art",
+    "quic": "webcore",
+    "taps": "webcore",
+    "tcpm": "webcore",
+    "tsvwg": "webcore",
+    #
+    "cdni": "webcore",
+    "core": "webcore",
+    "httpapi": "webcore",
+    "httpbis": "webcore",
+    "moq": "webcore",
+    "rtcweb": "webcore",
+    "webtrans": "webcore",
 }
 
 sankey(types, changes)
